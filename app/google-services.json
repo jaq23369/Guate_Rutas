@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "568680691187",
+    "project_id": "proyecromicro",
+    "storage_bucket": "proyecromicro.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:568680691187:android:acb8a5073fc7de91f20e86",
+        "android_client_info": {
+          "package_name": "com.example.guatertas"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDup1YV3IE9GWV7KcoobvEoihySYcslh1s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
