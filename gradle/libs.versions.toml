@@ -13,6 +13,9 @@ material = "1.12.0"
 activity = "1.9.3"
 constraintlayout = "2.1.4"
 googleServiceVersion="4.4.2"
+fireBaseAuthV="23.1.0"
+fireBaseStoreV="25.1.1"
+fireBaseStorageV="21.0.1"
 
 
 [libraries]
@@ -34,6 +37,10 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+
+fireBaseAuth={group="com.google.firebase",name="firebase-auth" , version.ref="fireBaseAuthV"}
+fireBaseStore={group="com.google.firebase",name="firebase-firestore" , version.ref="fireBaseStoreV"}
+fireBaseStorage={group="com.google.firebase",name="firebase-storage" , version.ref="fireBaseStorageV"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
