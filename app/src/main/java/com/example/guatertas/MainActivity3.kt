@@ -1,143 +1,139 @@
 package com.example.guatertas
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
+import androidx.core.content.PermissionChecker
+import androidx.core.content.PermissionChecker.checkSelfPermission
 import com.example.guatertas.ui.theme.GuateRütasTheme
-
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.*
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import android.annotation.SuppressLint
+import android.location.Location
 
 class MainActivity3 : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
-            GuateRütasTheme{
-                val navController = rememberNavController()  // Añadimos el navController
-                PantallaInteraccionComunitaria(navController)
+            GuateRütasTheme {
+                PantallaPrincipal()
             }
         }
     }
 }
 
-// Pantalla de Interacción Comunitaria
 @Composable
-fun PantallaInteraccionComunitaria(navController: NavHostController) {  // Añadimos navController
-    var nombreUsuario by remember { mutableStateOf("") }
-    var comentario by remember { mutableStateOf("") }
-    val reseñas = remember { mutableStateListOf<Reseña>() }
+fun PantallaPrincipal() {
+    var locationPermissionGranted by remember { mutableStateOf(false) }
+    val context = LocalContext.current // Obtener el contexto actual
+
+    val requestPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        locationPermissionGranted = isGranted
+    }
+
+    LaunchedEffect(Unit) {
+        if (context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            locationPermissionGranted = true
+        } else {
+            requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+        }
+    }
+
+    if (locationPermissionGranted) {
+        PantallaPersonalizaUbicacion()
+    } else {
+        Text("Se requiere permiso de ubicación para acceder al mapa.", modifier = Modifier.padding(16.dp))
+    }
+}
+
+@Composable
+fun PantallaPersonalizaUbicacion() {
+    var nombreUbicacion by remember { mutableStateOf(TextFieldValue("")) }
+    var reseñaUbicacion by remember { mutableStateOf(TextFieldValue("")) }
+    var linkImagen by remember { mutableStateOf(TextFieldValue("")) }
+
+    // Ubicación actual fija (puedes integrarla con FusedLocationProvider para obtener dinámicamente)
+    val currentLocation = LatLng(14.634915, -90.506882)
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Título de la pantalla
-        Text(
-            text = "Reseñas de la comunidad",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
+        Text("Personaliza tu Ubicación", style = MaterialTheme.typography.headlineSmall)
 
-        // Lista de reseñas
-        LazyColumn(
-            modifier = Modifier.weight(1f)
-        ) {
-            items(reseñas) { reseña ->
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    elevation = CardDefaults.cardElevation(4.dp)
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text(text = reseña.nombre, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(text = reseña.comentario)
-                    }
-                }
+        Spacer(modifier = Modifier.height(16.dp))
+
+        GoogleMap(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(300.dp),
+            cameraPositionState = rememberCameraPositionState {
+                position = CameraPosition.fromLatLngZoom(currentLocation, 15f)
             }
+        ) {
+            Marker(
+                state = MarkerState(position = currentLocation),
+                title = "Tu ubicación actual"
+            )
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Formulario para agregar reseña
-        Text(
-            text = "Agrega tu reseña",
-            fontWeight = FontWeight.Bold,
-            fontSize = 20.sp
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Campo para nombre del usuario
         OutlinedTextField(
-            value = nombreUsuario,
-            onValueChange = { nombreUsuario = it },
-            label = { Text("Tu nombre") },
+            value = nombreUbicacion,
+            onValueChange = { nombreUbicacion = it },
+            label = { Text("Nombre de la ubicación") },
             modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Campo para comentario de la reseña
         OutlinedTextField(
-            value = comentario,
-            onValueChange = { comentario = it },
-            label = { Text("Tu comentario") },
+            value = reseñaUbicacion,
+            onValueChange = { reseñaUbicacion = it },
+            label = { Text("Reseña de la ubicación") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        OutlinedTextField(
+            value = linkImagen,
+            onValueChange = { linkImagen = it },
+            label = { Text("Enlace de la imagen") },
             modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Botón para enviar la reseña
-        Button(
-            onClick = {
-                if (nombreUsuario.isNotEmpty() && comentario.isNotEmpty()) {
-                    reseñas.add(Reseña(nombreUsuario, comentario))
-                    nombreUsuario = ""  // Resetear el campo de nombre
-                    comentario = ""     // Resetear el campo de comentario
-                }
-            },
-            modifier = Modifier.align(Alignment.End)
-        ) {
-            Text("Enviar reseña")
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Botón para regresar a la pantalla anterior o principal
-        Button(
-            onClick = { navController.popBackStack() }, // Usamos el navController para regresar
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        ) {
-            Text("Volver a la pantalla principal")
+        Button(onClick = {
+            println("Ubicación guardada: ${nombreUbicacion.text}, Reseña: ${reseñaUbicacion.text}, Imagen: ${linkImagen.text}")
+        }) {
+            Text("Guardar Ubicación")
         }
     }
 }
 
-// Modelo de datos para una reseña
-data class Reseña(
-    val nombre: String,
-    val comentario: String
-)
 
-@Preview(showBackground = true)
-@Composable
-fun PreviewPantallaInteraccionComunitaria() {
-    GuateRütasTheme{
-        PantallaInteraccionComunitaria(rememberNavController())  // En la vista previa, inicializamos el navController
-    }
-}
+

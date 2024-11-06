@@ -30,6 +30,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.guatertas.ui.theme.GuateRütasTheme
 import kotlinx.coroutines.launch
+import com.example.guatertas.PantallaPersonalizaUbicacion
+
 
 class MainActivity : ComponentActivity() {
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -118,9 +120,8 @@ fun AppWithDualDrawer(navController: NavHostController) {
                             )
                             PantallaInformacionDetallada(navController, destino)
                         }
-                        // Pantalla 3: Interacción Comunitaria
-                        composable("pantalla3") {
-                            PantallaInteraccionComunitaria(navController)
+                        composable(route = "pantalla3") { backStackEntry ->
+                            PantallaPersonalizaUbicacion()
                         }
                         // Pantalla 4: Planificación de Viajes
                         composable("pantalla4") {

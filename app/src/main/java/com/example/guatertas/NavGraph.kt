@@ -31,8 +31,8 @@ fun AppNavGraph(navController: NavHostController) {
             PantallaInformacionDetallada(navController = navController, destino = destino)
         }
 
-        composable("pantalla3") {
-            PantallaInteraccionComunitaria(navController)
+        composable(route = "pantalla3") { backStackEntry ->
+            PantallaPersonalizaUbicacion()
         }
 
         composable("pantalla4") {
