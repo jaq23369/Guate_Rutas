@@ -52,6 +52,8 @@ android {
 
 dependencies {
 
+    implementation ("com.google.maps.android:maps-compose:2.1.0")
+    implementation ("com.google.android.gms:play-services-maps:18.0.2")
     implementation("androidx.compose.material:material:1.3.1")
     implementation("androidx.compose.material:material-icons-core:1.3.1")
     implementation("androidx.compose.material:material-icons-extended:1.3.1")
@@ -72,6 +74,7 @@ dependencies {
     implementation(libs.fireBaseAuth)
     implementation(libs.fireBaseStore)
     implementation(libs.fireBaseStorage)
+    implementation(libs.firebase.auth.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

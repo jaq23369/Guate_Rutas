@@ -16,6 +16,7 @@ googleServiceVersion="4.4.2"
 fireBaseAuthV="23.1.0"
 fireBaseStoreV="25.1.1"
 fireBaseStorageV="21.0.1"
+firebaseAuthKtx = "23.1.0"
 
 
 [libraries]
@@ -41,6 +42,7 @@ androidx-constraintlayout = { group = "androidx.constraintlayout", name = "const
 fireBaseAuth={group="com.google.firebase",name="firebase-auth" , version.ref="fireBaseAuthV"}
 fireBaseStore={group="com.google.firebase",name="firebase-firestore" , version.ref="fireBaseStoreV"}
 fireBaseStorage={group="com.google.firebase",name="firebase-storage" , version.ref="fireBaseStorageV"}
+firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuthKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

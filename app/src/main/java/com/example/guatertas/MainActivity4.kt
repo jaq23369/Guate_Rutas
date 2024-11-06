@@ -4,147 +4,89 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.guatertas.ui.theme.GuateRütasTheme
-import com.example.guatertas.Destino
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.rememberCameraPositionState
 
 class MainActivity4 : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            GuateRütasTheme{
-                // Iniciamos el NavController para navegación
-                val navController = rememberNavController()
-                PantallaPlanificacionViajes(navController)
+            GuateRütasTheme {
+                PantallaPlanificacionViajes()
             }
         }
     }
 }
 
-// Pantalla de Planificación de Viajes
 @Composable
-fun PantallaPlanificacionViajes(navController: NavHostController) {
-    // Lista de destinos disponibles
-    val destinosDisponibles = listOf(
-        Destino("Cimarron", "Un monumento natural en Guatemala.", R.drawable.cimarron),
-        Destino("Laguna Ordoñez", "Precioso lago en una de las montañas más altas del país.", R.drawable.lagordo),
-        Destino("Atitlán", "Una hermosa playa en el atlántico.", R.drawable.plbl)
+fun PantallaPlanificacionViajes() {
+    // Lista de destinos con ubicaciones predefinidas
+    val destinos = listOf(
+        Destino(
+            nombre = "Cimarron",
+            descripcion = "Un hermoso monumento natural en medio del desierto.",
+            imagenResId = R.drawable.cimarron,
+            latitud = 15.0311,
+            longitud = -91.6365
+        ),
+        Destino(
+            nombre = "Laguna Ordoñez",
+            descripcion = "Precioso lago en una de las montañas más altas del país.",
+            imagenResId = R.drawable.lagordo,
+            latitud = 14.7528,
+            longitud = -91.2678
+        )
     )
 
-    // Lista mutable para almacenar los destinos seleccionados por el usuario
-    val itinerario = remember { mutableStateListOf<Destino>() }
+    var mostrarMapa by remember { mutableStateOf(false) }
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
-        // Título
-        Text(
-            text = "Planificación de Viajes",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
+        Text("Posibles Destinos", style = MaterialTheme.typography.headlineSmall)
 
-        // Lista de destinos seleccionables
-        Text(
-            text = "Destinos disponibles:",
-            fontWeight = FontWeight.Bold,
-            fontSize = 18.sp
-        )
+        Spacer(modifier = Modifier.height(16.dp))
 
-        LazyColumn(modifier = Modifier.weight(1f)) {
-            items(destinosDisponibles) { destino ->
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    elevation = CardDefaults.cardElevation(4.dp)
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text(text = destino.nombre, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                        Text(text = destino.descripcion, fontSize = 14.sp)
+        Button(onClick = {
+            mostrarMapa = true
+        }) {
+            Text("Ver Mapa")
+        }
 
-                        // Botón para agregar destino al itinerario
-                        Button(
-                            onClick = {
-                                if (destino !in itinerario) {
-                                    itinerario.add(destino)
-                                }
-                            },
-                            modifier = Modifier.align(Alignment.End)
-                        ) {
-                            Text("Agregar al itinerario")
-                        }
-                    }
+        if (mostrarMapa) {
+            // Configuración de la posición inicial de la cámara en el primer destino
+            val initialPosition = LatLng(destinos[0].latitud, destinos[0].longitud)
+            val cameraPositionState = rememberCameraPositionState {
+                position = CameraPosition.fromLatLngZoom(initialPosition, 10f)
+            }
+
+            GoogleMap(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                cameraPositionState = cameraPositionState
+            ) {
+                destinos.forEach { destino ->
+                    Marker(
+                        state = MarkerState(position = LatLng(destino.latitud, destino.longitud)),
+                        title = destino.nombre,
+                        snippet = destino.descripcion
+                    )
                 }
             }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Mostrar el itinerario
-        Text(
-            text = "Tu itinerario:",
-            fontWeight = FontWeight.Bold,
-            fontSize = 18.sp
-        )
-
-        LazyColumn(modifier = Modifier.weight(1f)) {
-            items(itinerario) { destino ->
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    elevation = CardDefaults.cardElevation(4.dp)
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text(text = destino.nombre, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-
-                        // Botón para eliminar destino del itinerario
-                        Button(
-                            onClick = { itinerario.remove(destino) },
-                            modifier = Modifier.align(Alignment.End)
-                        ) {
-                            Text("Eliminar del itinerario")
-                        }
-                    }
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Botón para guardar el itinerario
-        Button(
-            onClick = {
-                // Aquí puedes implementar la lógica de guardar itinerario en almacenamiento o base de datos
-            },
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        ) {
-            Text("Guardar itinerario")
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Botón para regresar a la pantalla principal u otra pantalla
-        Button(
-            onClick = { navController.popBackStack() }, // Usamos el NavController para regresar
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        ) {
-            Text("Volver")
         }
     }
 }
@@ -152,7 +94,7 @@ fun PantallaPlanificacionViajes(navController: NavHostController) {
 @Preview(showBackground = true)
 @Composable
 fun PreviewPantallaPlanificacionViajes() {
-    GuateRütasTheme{
-        PantallaPlanificacionViajes(rememberNavController()) // Previsualización con el navController
+    GuateRütasTheme {
+        PantallaPlanificacionViajes()
     }
 }

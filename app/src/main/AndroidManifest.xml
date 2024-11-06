@@ -2,7 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- El elemento <application> debe estar directamente debajo de <manifest> -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -13,7 +16,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.GuateRütas"
         tools:targetApi="31">
-
+        <activity
+            android:name=".PantallaMapaItinerario"
+            android:exported="false" />
         <!-- Tus actividades deben estar dentro del elemento <application> -->
         <activity
             android:name=".SignInActivity"
@@ -22,31 +27,51 @@
             android:theme="@style/Theme.GuateRütas">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".SignUpActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.GuateRütas" />
-
-        <!-- Otras actividades -->
-        <activity android:name=".AppScaffold" android:exported="false" />
-        <activity android:name=".Destino" android:exported="false" />
-        <activity android:name=".BottomNav" android:exported="false" />
-        <activity android:name=".NavGraph" android:exported="false" />
-        <activity android:name=".MainActivity6" android:exported="false" />
-        <activity android:name=".MainActivity5" android:exported="false" />
-        <activity android:name=".MainActivity4" android:exported="false" />
-        <activity android:name=".MainActivity3" android:exported="false" />
-        <activity android:name=".MainActivity2" android:exported="false" />
+            android:theme="@style/Theme.GuateRütas" /> <!-- Otras actividades -->
+        <activity
+            android:name=".AppScaffold"
+            android:exported="false" />
+        <activity
+            android:name=".Destino"
+            android:exported="false" />
+        <activity
+            android:name=".BottomNav"
+            android:exported="false" />
+        <activity
+            android:name=".NavGraph"
+            android:exported="false" />
+        <activity
+            android:name=".MainActivity6"
+            android:exported="false" />
+        <activity
+            android:name=".MainActivity5"
+            android:exported="false" />
+        <activity
+            android:name=".MainActivity4"
+            android:exported="false" />
+        <activity
+            android:name=".MainActivity3"
+            android:exported="false" />
+        <activity
+            android:name=".MainActivity2"
+            android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.GuateRütas" />
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyBBtGufJrQ_7oxpoRWChiiaEce4DvYaNoE" />
     </application>
 
 </manifest>

@@ -1,5 +1,6 @@
 package com.example.guatertas
 
+import PantallaMapaItinerario
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -8,12 +9,14 @@ import androidx.navigation.compose.composable
 @Composable
 fun AppNavGraph(navController: NavHostController) {
     NavHost(navController = navController, startDestination = "main") {
-        // Pantalla principal
         composable("main") {
             PantallaDescubrimientoDestinosApp(navController)
         }
 
-        // Navegación a cada pantalla adicional
+        composable(route = "pantallaMapaItinerario") {
+            PantallaMapaItinerario()
+        }
+
         composable("pantalla2") {
             val destino = Destino(
                 nombre = "Cimarron",
@@ -21,18 +24,19 @@ fun AppNavGraph(navController: NavHostController) {
                 imagenResId = R.drawable.cimarron,
                 comoLlegar = "Puedes llegar en autobús desde Ciudad de Guatemala hasta huehuetengango y luego tomar transporte hacia el cimarron.",
                 queLlevar = "Lleva ropa cómoda, protector solar y suficiente agua.",
-                queEsperar = "Naturaleza increíble, senderos y caminata de 2 horas."
+                queEsperar = "Naturaleza increíble, senderos y caminata de 2 horas.",
+                latitud = 15.0311,
+                longitud = -91.6365
             )
             PantallaInformacionDetallada(navController = navController, destino = destino)
         }
 
-        // Agregar navegación para otras pantallas
         composable("pantalla3") {
             PantallaInteraccionComunitaria(navController)
         }
 
         composable("pantalla4") {
-            PantallaPlanificacionViajes(navController)
+            PantallaPlanificacionViajes()
         }
 
         composable("pantalla5") {
@@ -44,5 +48,6 @@ fun AppNavGraph(navController: NavHostController) {
         }
     }
 }
+
 
 

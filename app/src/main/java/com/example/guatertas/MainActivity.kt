@@ -112,7 +112,9 @@ fun AppWithDualDrawer(navController: NavHostController) {
                                 imagenResId = R.drawable.cimarron,
                                 comoLlegar = "Puedes llegar en autobús desde Ciudad de Guatemala hasta huehuetengango y luego tomar transporte hacia el cimarron.",
                                 queLlevar = "Lleva ropa cómoda, protector solar y suficiente agua.",
-                                queEsperar = "Naturaleza increíble, senderos y caminata de 2 horas."
+                                queEsperar = "Naturaleza increíble, senderos y caminata de 2 horas.",
+                                latitud = 15.0311,   // Valor de latitud
+                                longitud = -91.6365  // Valor de longitud
                             )
                             PantallaInformacionDetallada(navController, destino)
                         }
@@ -122,7 +124,7 @@ fun AppWithDualDrawer(navController: NavHostController) {
                         }
                         // Pantalla 4: Planificación de Viajes
                         composable("pantalla4") {
-                            PantallaPlanificacionViajes(navController)
+                            PantallaPlanificacionViajes()
                         }
                         // Pantalla 5: Apoyo a la Comunidad Local
                         composable("pantalla5") {
@@ -148,11 +150,30 @@ fun PantallaDescubrimientoDestinosApp(
 ) {
     val destinos = remember {
         mutableStateListOf(
-            Destino("El cimarron", "Un hermoso monumento natural en medio del desierto.", R.drawable.cimarron),
-            Destino("Playa blanca", "Una playa preciosa en el atlántico.", R.drawable.plbl),
-            Destino("Laguna Ordoñez", "Un destino de aventuras con impresionantes paisajes montañosos.", R.drawable.lagordo)
+            Destino(
+                nombre = "El cimarron",
+                descripcion = "Un hermoso monumento natural en medio del desierto.",
+                imagenResId = R.drawable.cimarron,
+                latitud = 15.0311,
+                longitud = -91.6365
+            ),
+            Destino(
+                nombre = "Playa blanca",
+                descripcion = "Una playa preciosa en el atlántico.",
+                imagenResId = R.drawable.plbl,
+                latitud = 15.7835,
+                longitud = -88.9947
+            ),
+            Destino(
+                nombre = "Laguna Ordoñez",
+                descripcion = "Un destino de aventuras con impresionantes paisajes montañosos.",
+                imagenResId = R.drawable.lagordo,
+                latitud = 14.5289,
+                longitud = -89.3781
+            )
         )
     }
+
 
     Scaffold(
         content = {
@@ -163,7 +184,9 @@ fun PantallaDescubrimientoDestinosApp(
                         Destino(
                             "Laguna Brava",
                             "Un lago escondido en las montañas, perfecto para los amantes de la naturaleza.",
-                            android.R.drawable.ic_menu_slideshow
+                            android.R.drawable.ic_menu_gallery,
+                            latitud = 15.7153, // Ejemplo de latitud
+                            longitud = -91.8726 // Ejemplo de longitud
                         )
                     )
                 },
@@ -236,4 +259,5 @@ fun CardDestino(destino: Destino, onClick: () -> Unit) {
         }
     }
 }
+
 

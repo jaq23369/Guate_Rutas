@@ -41,7 +41,9 @@ class MainActivity2 : ComponentActivity() {
                     imagenResId = R.drawable.cimarron,
                     comoLlegar = "Puedes llegar en autobús desde Ciudad de Guatemala hasta huehuetengango y luego tomar transporte hacia el cimarron.",
                     queLlevar = "Lleva ropa cómoda, protector solar y suficiente agua.",
-                    queEsperar = "Naturaleza increíble, senderos y caminata de 2 horas."
+                    queEsperar = "Naturaleza increíble, senderos y caminata de 2 horas.",
+                    latitud = 15.0311,
+                    longitud = -91.6365
                 )
                 // Solo para previsualizar la pantalla, usamos un NavController simulado
                 PantallaInformacionDetallada(rememberNavController(), destino = destino)
@@ -146,7 +148,9 @@ fun PreviewPantallaInformacionDetallada() {
         imagenResId = R.drawable.cimarron,
         comoLlegar = "Puedes llegar en autobús desde Ciudad de Guatemala hasta huehuetengango y luego tomar transporte hacia el cimarron.",
         queLlevar = "Lleva ropa cómoda, protector solar y suficiente agua.",
-        queEsperar = "Naturaleza increíble, senderos y caminata de 2 horas."
+        queEsperar = "Naturaleza increíble, senderos y caminata de 2 horas.",
+        latitud = 15.0311,
+        longitud = -91.6365
     )
     GuateRütasTheme{
         // En la vista previa, simulamos el NavController
