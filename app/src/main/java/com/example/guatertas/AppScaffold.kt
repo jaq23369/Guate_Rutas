@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -38,9 +39,18 @@ fun AppWithDualDrawer(
     ) {
         ModalNavigationDrawer(
             drawerContent = {
-                RightDrawerContent(closeDrawer = {
-                    coroutineScope.launch { rightDrawerState.close() }
-                })
+                RightDrawerContent(
+                    closeDrawer = {
+                        coroutineScope.launch { rightDrawerState.close() }
+                    },
+                    onLogout = {
+                        // Lógica de cierre de sesión
+                        FirebaseAuth.getInstance().signOut()
+                        navController.navigate("signIn") {
+                            popUpTo("main") { inclusive = true } // Limpia el stack de navegación
+                        }
+                    }
+                )
             },
             drawerState = rightDrawerState,
             gesturesEnabled = false
@@ -114,7 +124,10 @@ fun LeftDrawerContent(navController: NavHostController, closeDrawer: () -> Unit)
 }
 
 @Composable
-fun RightDrawerContent(closeDrawer: () -> Unit) {
+fun RightDrawerContent(
+    closeDrawer: () -> Unit,
+    onLogout: () -> Unit // Nuevo parámetro para manejar cierre de sesión
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -122,14 +135,16 @@ fun RightDrawerContent(closeDrawer: () -> Unit) {
             .padding(16.dp)
     ) {
         Text("Ajustes de cuenta", fontSize = 18.sp, modifier = Modifier.clickable {
-            // Lógica para ajustes de cuenta
+            // Lógica para ajustes de cuenta (mantén vacío si no lo necesitas por ahora)
             closeDrawer()
         })
         Spacer(modifier = Modifier.height(16.dp))
 
         Text("Cerrar sesión", fontSize = 18.sp, modifier = Modifier.clickable {
-            // Lógica para cerrar sesión
+            // Cierra el drawer y llama a la función de cierre de sesión
             closeDrawer()
+            onLogout() // Cierra sesión
         })
     }
 }
+
