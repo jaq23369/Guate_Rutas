@@ -1,19 +1,24 @@
 package com.example.guatertas
 
 import android.content.Intent
+import androidx.compose.foundation.Image
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.delay
 
 class SignInActivity : ComponentActivity() {
     private lateinit var auth: FirebaseAuth
@@ -24,15 +29,46 @@ class SignInActivity : ComponentActivity() {
         auth = FirebaseAuth.getInstance()
 
         setContent {
-            SignInScreen(auth) { isSignedIn ->
-                if (isSignedIn) {
-                    startActivity(Intent(this, MainActivity::class.java))
-                    finish()
+            var showSplashScreen by remember { mutableStateOf(true) }
+
+            if (showSplashScreen) {
+                SplashScreen {
+                    showSplashScreen = false // Cambia a la pantalla de inicio de sesión después del SplashScreen
+                }
+            } else {
+                SignInScreen(auth) { isSignedIn ->
+                    if (isSignedIn) {
+                        startActivity(Intent(this, MainActivity::class.java))
+                        finish()
+                    }
                 }
             }
         }
     }
 }
+
+@Composable
+fun SplashScreen(onTimeout: () -> Unit) {
+    LaunchedEffect(Unit) {
+        delay(3000) // Duración del SplashScreen en milisegundos
+        onTimeout()
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFF1A73E8)), // Fondo azul
+        contentAlignment = Alignment.Center
+    ) {
+        Image(
+            painter = painterResource(id = R.mipmap.gute_ruta_foreground), // Usa mipmap en lugar de drawable
+            contentDescription = "Logo de Guate Rutas",
+            modifier = Modifier.size(150.dp) // Ajusta el tamaño según lo necesario
+        )
+    }
+}
+
+
 
 @Composable
 fun SignInScreen(auth: FirebaseAuth, onSignInSuccess: (Boolean) -> Unit) {
