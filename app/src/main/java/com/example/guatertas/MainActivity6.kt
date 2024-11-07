@@ -1,5 +1,6 @@
 package com.example.guatertas
 
+import PreferencesManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -10,12 +11,15 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.guatertas.ui.theme.GuateRütasTheme
+import com.google.gson.Gson
+import kotlinx.coroutines.launch
 import androidx.compose.ui.tooling.preview.Preview
 
 class MainActivity6 : ComponentActivity() {
@@ -30,39 +34,61 @@ class MainActivity6 : ComponentActivity() {
     }
 }
 
-// Pantalla de Notificaciones y Alertas
 @Composable
-fun PantallaNotificacionesYAlertas(navController: NavHostController) {  // Añadimos el NavController
-    // Lista de destinos con sus condiciones actuales
-    val destinos = listOf(
-        DestinoConNotificacion(
-            nombre = "El Cimarron",
-            clima = "Lluvia ligera",
-            accesibilidad = "Accesible",
-            notificacionesHabilitadas = false
-        ),
-        DestinoConNotificacion(
-            nombre = "Laguna Ordoñez",
-            clima = "Soleado",
-            accesibilidad = "Accesible",
-            notificacionesHabilitadas = true
-        ),
-        DestinoConNotificacion(
-            nombre = "Playa Blanca",
-            clima = "Nublado",
-            accesibilidad = "Cerrado por mantenimiento",
-            notificacionesHabilitadas = false
-        )
-    )
+fun PantallaNotificacionesYAlertas(navController: NavHostController) {
+    val context = LocalContext.current
+    val preferencesManager = PreferencesManager
+    val coroutineScope = rememberCoroutineScope()
 
-    var destinosNotificados by remember { mutableStateOf(destinos) }
+    // Estado de la lista de destinos cargados
+    var destinosNotificados by remember { mutableStateOf<List<DestinoConNotificacion>>(emptyList()) }
+
+    // Obtener datos en caché si los hay
+    val cachedData by preferencesManager.getCachedScreenData(context, "pantalla6").collectAsState(initial = null)
+
+    LaunchedEffect(Unit) {
+        cachedData?.let { data ->
+            val cachedDestinos = Gson().fromJson(data, Array<DestinoConNotificacion>::class.java).toList()
+            destinosNotificados = cachedDestinos
+        }
+
+        // Simulación: Verificar si hay conexión para cargar datos nuevos
+        if (isOnline(context)) {
+            val nuevosDestinos = listOf(
+                DestinoConNotificacion(
+                    nombre = "El Cimarron",
+                    clima = "Lluvia ligera",
+                    accesibilidad = "Accesible",
+                    notificacionesHabilitadas = false
+                ),
+                DestinoConNotificacion(
+                    nombre = "Laguna Ordoñez",
+                    clima = "Soleado",
+                    accesibilidad = "Accesible",
+                    notificacionesHabilitadas = true
+                ),
+                DestinoConNotificacion(
+                    nombre = "Playa Blanca",
+                    clima = "Nublado",
+                    accesibilidad = "Cerrado por mantenimiento",
+                    notificacionesHabilitadas = false
+                )
+            )
+            destinosNotificados = nuevosDestinos
+
+            // Guardar nuevos datos en caché
+            val dataToCache = Gson().toJson(nuevosDestinos)
+            coroutineScope.launch {
+                preferencesManager.saveScreenData(context, "pantalla6", dataToCache)
+            }
+        }
+    }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        // Título
         Text(
             text = "Notificaciones y Alertas",
             fontSize = 24.sp,
@@ -70,7 +96,6 @@ fun PantallaNotificacionesYAlertas(navController: NavHostController) {  // Añad
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        // Lista de destinos con alertas
         LazyColumn(modifier = Modifier.weight(1f)) {
             items(destinosNotificados) { destino ->
                 Card(
@@ -85,7 +110,6 @@ fun PantallaNotificacionesYAlertas(navController: NavHostController) {  // Añad
                         Text(text = "Clima: ${destino.clima}", fontSize = 14.sp)
                         Text(text = "Accesibilidad: ${destino.accesibilidad}", fontSize = 14.sp)
 
-                        // Interruptor para habilitar o deshabilitar notificaciones
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.fillMaxWidth()
@@ -95,7 +119,6 @@ fun PantallaNotificacionesYAlertas(navController: NavHostController) {  // Añad
                             Switch(
                                 checked = destino.notificacionesHabilitadas,
                                 onCheckedChange = {
-                                    // Actualizar el estado de las notificaciones
                                     val index = destinosNotificados.indexOf(destino)
                                     destinosNotificados = destinosNotificados.toMutableList().apply {
                                         this[index] = this[index].copy(notificacionesHabilitadas = it)
@@ -110,9 +133,8 @@ fun PantallaNotificacionesYAlertas(navController: NavHostController) {  // Añad
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Botón para regresar a la pantalla anterior
         Button(
-            onClick = { navController.popBackStack() },  // Navegación para volver
+            onClick = { navController.popBackStack() },
             modifier = Modifier.align(Alignment.CenterHorizontally)
         ) {
             Text("Volver")
@@ -120,7 +142,6 @@ fun PantallaNotificacionesYAlertas(navController: NavHostController) {  // Añad
     }
 }
 
-// Modelo de datos para un destino con notificación
 data class DestinoConNotificacion(
     val nombre: String,
     val clima: String,

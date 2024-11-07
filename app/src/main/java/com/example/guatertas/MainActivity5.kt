@@ -1,5 +1,6 @@
 package com.example.guatertas
 
+import PreferencesManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -10,6 +11,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -17,6 +19,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.guatertas.ui.theme.GuateRütasTheme
+import com.google.gson.Gson
+import kotlinx.coroutines.launch
 
 class MainActivity5 : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,27 +34,52 @@ class MainActivity5 : ComponentActivity() {
     }
 }
 
-// Pantalla de Apoyo a la Comunidad Local
 @Composable
-fun PantallaApoyoComunidadLocal(navController: NavHostController) {  // Añadimos navController
-    // Lista de proyectos de turismo sostenible
-    val proyectosSostenibles = listOf(
-        ProyectoSostenible(
-            nombre = "Reforma de senderos el Cimarron",
-            descripcion = "Proyecto que mejorar los senderos para llegar al lugar.",
-            detalles = "Este proyecto se centra en arreglar y mejorar los senderos del Cimarron."
-        ),
-        ProyectoSostenible(
-            nombre = "Turismo en laguna Ordoñez",
-            descripcion = "Un proyecto que involucra a la comunidad para promover el turismo.",
-            detalles = "Los visitantes pueden aprender sobre la cultura local y contribuir a proyectos de desarrollo comunitario."
-        ),
-        ProyectoSostenible(
-            nombre = "Conservación de Playa blanca",
-            descripcion = "Iniciativa para reducir la contaminación y proteger el ecosistema de la playa.",
-            detalles = "El proyecto incluye campañas de concientización y actividades de limpieza en colaboración con los turistas y la comunidad."
-        )
-    )
+fun PantallaApoyoComunidadLocal(navController: NavHostController) {
+    val context = LocalContext.current
+    val preferencesManager = PreferencesManager
+    val coroutineScope = rememberCoroutineScope()
+
+    // Estado de la lista de proyectos cargados
+    var proyectosCargados by remember { mutableStateOf<List<ProyectoSostenible>>(emptyList()) }
+
+    // Obtener datos en caché si los hay
+    val cachedData by preferencesManager.getCachedScreenData(context, "pantalla5").collectAsState(initial = null)
+
+    LaunchedEffect(Unit) {
+        cachedData?.let { data ->
+            val cachedProyectos = Gson().fromJson(data, Array<ProyectoSostenible>::class.java).toList()
+            proyectosCargados = cachedProyectos
+        }
+
+        // Simulación: Verificar si hay conexión para cargar datos nuevos
+        if (isOnline(context)) {
+            val nuevosProyectos = listOf(
+                ProyectoSostenible(
+                    nombre = "Reforma de senderos el Cimarron",
+                    descripcion = "Proyecto que mejorar los senderos para llegar al lugar.",
+                    detalles = "Este proyecto se centra en arreglar y mejorar los senderos del Cimarron."
+                ),
+                ProyectoSostenible(
+                    nombre = "Turismo en laguna Ordoñez",
+                    descripcion = "Un proyecto que involucra a la comunidad para promover el turismo.",
+                    detalles = "Los visitantes pueden aprender sobre la cultura local y contribuir a proyectos de desarrollo comunitario."
+                ),
+                ProyectoSostenible(
+                    nombre = "Conservación de Playa blanca",
+                    descripcion = "Iniciativa para reducir la contaminación y proteger el ecosistema de la playa.",
+                    detalles = "El proyecto incluye campañas de concientización y actividades de limpieza en colaboración con los turistas y la comunidad."
+                )
+            )
+            proyectosCargados = nuevosProyectos
+
+            // Guardar nuevos datos en caché
+            val dataToCache = Gson().toJson(nuevosProyectos)
+            coroutineScope.launch {
+                preferencesManager.saveScreenData(context, "pantalla5", dataToCache)
+            }
+        }
+    }
 
     var proyectoSeleccionado by remember { mutableStateOf<ProyectoSostenible?>(null) }
 
@@ -59,7 +88,6 @@ fun PantallaApoyoComunidadLocal(navController: NavHostController) {  // Añadimo
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        // Título
         Text(
             text = "Apoyo a la Comunidad Local",
             fontSize = 24.sp,
@@ -68,7 +96,6 @@ fun PantallaApoyoComunidadLocal(navController: NavHostController) {  // Añadimo
         )
 
         if (proyectoSeleccionado == null) {
-            // Lista de proyectos disponibles
             Text(
                 text = "Proyectos de turismo sostenible:",
                 fontWeight = FontWeight.Bold,
@@ -76,7 +103,7 @@ fun PantallaApoyoComunidadLocal(navController: NavHostController) {  // Añadimo
             )
 
             LazyColumn(modifier = Modifier.weight(1f)) {
-                items(proyectosSostenibles) { proyecto ->
+                items(proyectosCargados) { proyecto ->
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -87,7 +114,6 @@ fun PantallaApoyoComunidadLocal(navController: NavHostController) {  // Añadimo
                             Text(text = proyecto.nombre, fontWeight = FontWeight.Bold, fontSize = 16.sp)
                             Text(text = proyecto.descripcion, fontSize = 14.sp)
 
-                            // Botón para ver más detalles
                             Button(
                                 onClick = { proyectoSeleccionado = proyecto },
                                 modifier = Modifier.align(Alignment.End)
@@ -99,23 +125,22 @@ fun PantallaApoyoComunidadLocal(navController: NavHostController) {  // Añadimo
                 }
             }
         } else {
-            // Detalles del proyecto seleccionado
             ProyectoSostenibleDetalles(proyectoSeleccionado!!) {
-                proyectoSeleccionado = null  // Regresar a la lista
+                proyectoSeleccionado = null
             }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Botón para regresar a la pantalla anterior
         Button(
-            onClick = { navController.popBackStack() }, // Botón para regresar
+            onClick = { navController.popBackStack() },
             modifier = Modifier.align(Alignment.CenterHorizontally)
         ) {
             Text("Volver")
         }
     }
 }
+
 
 // Componente que muestra los detalles del proyecto seleccionado
 @Composable

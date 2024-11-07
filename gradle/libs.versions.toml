@@ -17,6 +17,7 @@ fireBaseAuthV="23.1.0"
 fireBaseStoreV="25.1.1"
 fireBaseStorageV="21.0.1"
 firebaseAuthKtx = "23.1.0"
+datastorePreferencesCoreJvm = "1.1.1"
 
 
 [libraries]
@@ -43,6 +44,7 @@ fireBaseAuth={group="com.google.firebase",name="firebase-auth" , version.ref="fi
 fireBaseStore={group="com.google.firebase",name="firebase-firestore" , version.ref="fireBaseStoreV"}
 fireBaseStorage={group="com.google.firebase",name="firebase-storage" , version.ref="fireBaseStorageV"}
 firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuthKtx" }
+androidx-datastore-preferences-core-jvm = { group = "androidx.datastore", name = "datastore-preferences-core-jvm", version.ref = "datastorePreferencesCoreJvm" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

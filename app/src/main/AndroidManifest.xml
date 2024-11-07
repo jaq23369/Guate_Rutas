@@ -17,9 +17,11 @@
         android:theme="@style/Theme.GuateRütas"
         tools:targetApi="31">
         <activity
-            android:name=".PantallaMapaItinerario"
+            android:name=".PreferencesManager"
             android:exported="false" />
-        <!-- Tus actividades deben estar dentro del elemento <application> -->
+        <activity
+            android:name=".PantallaMapaItinerario"
+            android:exported="false" /> <!-- Tus actividades deben estar dentro del elemento <application> -->
         <activity
             android:name=".SignInActivity"
             android:exported="true"

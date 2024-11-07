@@ -1,5 +1,6 @@
 package com.example.guatertas
 
+import PreferencesManager
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -26,6 +27,8 @@ import com.google.android.gms.location.LocationServices
 import android.annotation.SuppressLint
 import android.location.Location
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.gson.Gson
+import kotlinx.coroutines.launch
 
 class MainActivity3 : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,11 +73,26 @@ fun PantallaPersonalizaUbicacion() {
     var nombreUbicacion by remember { mutableStateOf(TextFieldValue("")) }
     var reseñaUbicacion by remember { mutableStateOf(TextFieldValue("")) }
     var linkImagen by remember { mutableStateOf(TextFieldValue("")) }
-    val context = LocalContext.current // Necesario para Firestore
+    val context = LocalContext.current
+    val firestore = FirebaseFirestore.getInstance()
+    val preferencesManager = PreferencesManager
+    val coroutineScope = rememberCoroutineScope()
 
-    // Ubicación actual fija (puedes integrarla con FusedLocationProvider para obtener dinámicamente)
+    // Ubicación actual fija o dinámica según sea el caso
     val currentLocation = LatLng(14.634915, -90.506882)
-    val firestore = FirebaseFirestore.getInstance() // Instancia de Firestore
+
+    // Recuperar datos de caché
+    val cachedData by preferencesManager.getCachedScreenData(context, "pantalla3").collectAsState(initial = null)
+
+    LaunchedEffect(Unit) {
+        cachedData?.let { data ->
+            // Si hay datos en caché, cargar en los campos
+            val cachedLocation = Gson().fromJson(data, Ubicacion::class.java)
+            nombreUbicacion = TextFieldValue(cachedLocation.nombreUbicacion)
+            reseñaUbicacion = TextFieldValue(cachedLocation.reseñaUbicacion)
+            linkImagen = TextFieldValue(cachedLocation.linkImagen)
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -131,15 +149,15 @@ fun PantallaPersonalizaUbicacion() {
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(onClick = {
-            // Llamada a Firestore para almacenar la información
-            val locationData = hashMapOf(
-                "nombreUbicacion" to nombreUbicacion.text,
-                "reseñaUbicacion" to reseñaUbicacion.text,
-                "linkImagen" to linkImagen.text,
-                "latitud" to currentLocation.latitude,
-                "longitud" to currentLocation.longitude
+            val locationData = Ubicacion(
+                nombreUbicacion.text,
+                reseñaUbicacion.text,
+                linkImagen.text,
+                currentLocation.latitude,
+                currentLocation.longitude
             )
 
+            // Guardar en Firestore
             firestore.collection("ubicaciones")
                 .add(locationData)
                 .addOnSuccessListener {
@@ -148,11 +166,26 @@ fun PantallaPersonalizaUbicacion() {
                 .addOnFailureListener { e ->
                     println("Error al guardar la ubicación: $e")
                 }
+
+            // Guardar en caché
+            val dataToCache = Gson().toJson(locationData)
+            coroutineScope.launch {
+                preferencesManager.saveScreenData(context, "pantalla3", dataToCache)
+            }
         }) {
             Text("Guardar Ubicación")
         }
     }
 }
+
+// Modelo de datos para caché
+data class Ubicacion(
+    val nombreUbicacion: String,
+    val reseñaUbicacion: String,
+    val linkImagen: String,
+    val latitud: Double,
+    val longitud: Double
+)
 
 
 

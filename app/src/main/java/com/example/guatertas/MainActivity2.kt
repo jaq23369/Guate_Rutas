@@ -1,6 +1,6 @@
 package com.example.guatertas
 
-
+import PreferencesManager
 import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -12,12 +12,12 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -26,46 +26,83 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.guatertas.ui.theme.GuateRütasTheme
-
+import com.google.gson.Gson
+import kotlinx.coroutines.launch
 
 class MainActivity2 : ComponentActivity() {
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            GuateRütasTheme{
-                // No necesitamos inicializar el NavController aquí, ya lo pasaremos desde el NavGraph
-                val destino = Destino(
-                    nombre = "Cimarron",
-                    descripcion = "Un hermoso monumento natural en medio del desierto.",
-                    imagenResId = R.drawable.cimarron,
-                    comoLlegar = "Puedes llegar en autobús desde Ciudad de Guatemala hasta huehuetengango y luego tomar transporte hacia el cimarron.",
-                    queLlevar = "Lleva ropa cómoda, protector solar y suficiente agua.",
-                    queEsperar = "Naturaleza increíble, senderos y caminata de 2 horas.",
-                    latitud = 15.0311,
-                    longitud = -91.6365
-                )
-                // Solo para previsualizar la pantalla, usamos un NavController simulado
-                PantallaInformacionDetallada(rememberNavController(), destino = destino)
+            GuateRütasTheme {
+                val navController = rememberNavController()
+                PantallaCachableInformacionDetallada(navController)
             }
         }
     }
 }
 
-// Composable para mostrar la pantalla de información detallada
+@Composable
+fun PantallaCachableInformacionDetallada(navController: NavHostController) {
+    val context = LocalContext.current
+    val preferencesManager = PreferencesManager
+    val coroutineScope = rememberCoroutineScope()
+
+    // Estado de destino recuperado desde el caché
+    var destino by remember { mutableStateOf<Destino?>(null) }
+    val cachedData by preferencesManager.getCachedScreenData(context, "pantalla2").collectAsState(initial = null)
+
+    LaunchedEffect(Unit) {
+        cachedData?.let { data ->
+            destino = Gson().fromJson(data, Destino::class.java)
+        }
+
+        // Simulación: Descargar datos si hay conexión (sustituir lógica por verificación de internet)
+        if (destino == null) {
+            val nuevoDestino = Destino(
+                nombre = "Cimarron",
+                descripcion = "Un hermoso monumento natural en medio del desierto.",
+                imagenResId = R.drawable.cimarron,
+                comoLlegar = "Puedes llegar en autobús desde Ciudad de Guatemala hasta Huehuetenango y luego tomar transporte hacia el Cimarron.",
+                queLlevar = "Lleva ropa cómoda, protector solar y suficiente agua.",
+                queEsperar = "Naturaleza increíble, senderos y caminata de 2 horas.",
+                latitud = 15.0311,
+                longitud = -91.6365
+            )
+            destino = nuevoDestino
+
+            // Guardar en caché
+            val dataToCache = Gson().toJson(nuevoDestino)
+            coroutineScope.launch {
+                preferencesManager.saveScreenData(context, "pantalla2", dataToCache)
+            }
+        }
+    }
+
+    // Mostrar pantalla
+    if (destino != null) {
+        PantallaInformacionDetallada(navController, destino!!)
+    } else {
+        Text(
+            text = "No hay datos disponibles. Por favor, conéctate a Internet.",
+            modifier = Modifier
+                .fillMaxSize()
+                .wrapContentSize(Alignment.Center)
+        )
+    }
+}
+
 @Composable
 fun PantallaInformacionDetallada(
-    navController: NavHostController, // Recibimos el navController desde el NavGraph
+    navController: NavHostController,
     destino: Destino
 ) {
-    // Scrollable column para permitir desplazamiento vertical
     Column(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(16.dp)
     ) {
-        // Imagen del destino
         Image(
             painter = painterResource(id = destino.imagenResId),
             contentDescription = destino.nombre,
@@ -77,7 +114,6 @@ fun PantallaInformacionDetallada(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Título del destino
         Text(
             text = destino.nombre,
             fontSize = 28.sp,
@@ -86,24 +122,17 @@ fun PantallaInformacionDetallada(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Sección: Cómo llegar
         InformacionSeccion(titulo = "Cómo llegar", descripcion = destino.comoLlegar)
-
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Sección: Qué llevar
         InformacionSeccion(titulo = "Qué llevar", descripcion = destino.queLlevar)
-
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Sección: Qué esperar
         InformacionSeccion(titulo = "Qué esperar", descripcion = destino.queEsperar)
-
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Botón para regresar a la pantalla anterior
         Button(
-            onClick = { navController.popBackStack() }, // Navegación para volver
+            onClick = { navController.popBackStack() },
             modifier = Modifier.align(Alignment.CenterHorizontally)
         ) {
             Text("Volver a la lista")
@@ -111,7 +140,6 @@ fun PantallaInformacionDetallada(
     }
 }
 
-// Componente para mostrar una sección de información
 @Composable
 fun InformacionSeccion(titulo: String, descripcion: String) {
     Card(
@@ -121,20 +149,9 @@ fun InformacionSeccion(titulo: String, descripcion: String) {
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-            // Título de la sección
-            Text(
-                text = titulo,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
-            )
-
+            Text(text = titulo, fontSize = 20.sp, fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(8.dp))
-
-            // Descripción de la sección
-            Text(
-                text = descripcion,
-                fontSize = 16.sp
-            )
+            Text(text = descripcion, fontSize = 16.sp)
         }
     }
 }
@@ -146,14 +163,13 @@ fun PreviewPantallaInformacionDetallada() {
         nombre = "Cimarron",
         descripcion = "Un hermoso monumento natural en medio del desierto.",
         imagenResId = R.drawable.cimarron,
-        comoLlegar = "Puedes llegar en autobús desde Ciudad de Guatemala hasta huehuetengango y luego tomar transporte hacia el cimarron.",
+        comoLlegar = "Puedes llegar en autobús desde Ciudad de Guatemala hasta Huehuetenango y luego tomar transporte hacia el Cimarron.",
         queLlevar = "Lleva ropa cómoda, protector solar y suficiente agua.",
         queEsperar = "Naturaleza increíble, senderos y caminata de 2 horas.",
         latitud = 15.0311,
         longitud = -91.6365
     )
-    GuateRütasTheme{
-        // En la vista previa, simulamos el NavController
+    GuateRütasTheme {
         PantallaInformacionDetallada(rememberNavController(), destino)
     }
 }

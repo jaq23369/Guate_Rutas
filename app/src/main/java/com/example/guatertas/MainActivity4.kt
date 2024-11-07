@@ -1,5 +1,6 @@
 package com.example.guatertas
 
+import PreferencesManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -8,15 +9,28 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.guatertas.ui.theme.GuateRütasTheme
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.gson.Gson
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
+import kotlinx.coroutines.launch
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+
+fun isOnline(context: Context): Boolean {
+    val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    val network = connectivityManager.activeNetwork ?: return false
+    val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
+    return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+}
 
 class MainActivity4 : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,7 +45,11 @@ class MainActivity4 : ComponentActivity() {
 
 @Composable
 fun PantallaPlanificacionViajes() {
-    // Lista de destinos con ubicaciones predefinidas
+    val context = LocalContext.current
+    val preferencesManager = PreferencesManager
+    val coroutineScope = rememberCoroutineScope()
+
+    // Lista de destinos predefinidos
     val destinos = listOf(
         Destino(
             nombre = "Cimarron",
@@ -49,7 +67,29 @@ fun PantallaPlanificacionViajes() {
         )
     )
 
+    // Recuperar caché
+    val cachedData by preferencesManager.getCachedScreenData(context, "pantalla4").collectAsState(initial = null)
+    var destinosCargados by remember { mutableStateOf<List<Destino>?>(null) }
     var mostrarMapa by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        // Si hay datos en caché, cargarlos
+        cachedData?.let { data ->
+            destinosCargados = Gson().fromJson(data, Array<Destino>::class.java).toList()
+        }
+
+        // Simulación de conexión para cargar datos nuevos
+        if (isOnline(context)) { // Reemplaza el comentario con la función de verificación de conexión
+            val nuevosDestinos = destinos // Simulando una respuesta de red
+            destinosCargados = nuevosDestinos
+
+            // Guardar en caché
+            val dataToCache = Gson().toJson(nuevosDestinos)
+            coroutineScope.launch {
+                preferencesManager.saveScreenData(context = context, screen = "pantalla4", data = dataToCache)
+            }
+        }
+    }
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -67,26 +107,27 @@ fun PantallaPlanificacionViajes() {
         }
 
         if (mostrarMapa) {
-            // Configuración de la posición inicial de la cámara en el primer destino
-            val initialPosition = LatLng(destinos[0].latitud, destinos[0].longitud)
-            val cameraPositionState = rememberCameraPositionState {
-                position = CameraPosition.fromLatLngZoom(initialPosition, 10f)
-            }
-
-            GoogleMap(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                cameraPositionState = cameraPositionState
-            ) {
-                destinos.forEach { destino ->
-                    Marker(
-                        state = MarkerState(position = LatLng(destino.latitud, destino.longitud)),
-                        title = destino.nombre,
-                        snippet = destino.descripcion
-                    )
+            destinosCargados?.let { destinos ->
+                val initialPosition = LatLng(destinos[0].latitud, destinos[0].longitud)
+                val cameraPositionState = rememberCameraPositionState {
+                    position = CameraPosition.fromLatLngZoom(initialPosition, 10f)
                 }
-            }
+
+                GoogleMap(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    cameraPositionState = cameraPositionState
+                ) {
+                    destinos.forEach { destino ->
+                        Marker(
+                            state = MarkerState(position = LatLng(destino.latitud, destino.longitud)),
+                            title = destino.nombre,
+                            snippet = destino.descripcion
+                        )
+                    }
+                }
+            } ?: Text("No hay datos disponibles. Conéctate a Internet para cargar destinos.")
         }
     }
 }

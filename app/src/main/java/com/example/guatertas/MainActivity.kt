@@ -30,17 +30,35 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.guatertas.ui.theme.GuateRütasTheme
 import kotlinx.coroutines.launch
-import com.example.guatertas.PantallaPersonalizaUbicacion
-
+import kotlinx.coroutines.runBlocking
 
 class MainActivity : ComponentActivity() {
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Recuperar la última pantalla visitada al iniciar
+        val lastVisitedScreen = runBlocking {
+            PreferencesManager.obtenerUltimaPantalla(this@MainActivity)
+        } ?: "main"
+
         setContent {
             GuateRütasTheme {
                 val navController = rememberNavController()
-                AppWithDualDrawer(navController)
+
+                // Escuchar cambios de destino en NavController
+                LaunchedEffect(navController) {
+                    navController.addOnDestinationChangedListener { _, destination, _ ->
+                        val currentRoute = destination.route
+                        if (currentRoute != null) {
+                            launch {
+                                PreferencesManager.guardarUltimaPantalla(this@MainActivity, currentRoute)
+                            }
+                        }
+                    }
+                }
+
+                AppWithDualDrawer(navController, lastVisitedScreen)
             }
         }
     }
@@ -48,7 +66,7 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppWithDualDrawer(navController: NavHostController) {
+fun AppWithDualDrawer(navController: NavHostController, startDestination: String) {
     val leftDrawerState = rememberDrawerState(DrawerValue.Closed)
     val rightDrawerState = rememberDrawerState(DrawerValue.Closed)
     val coroutineScope = rememberCoroutineScope()
@@ -96,17 +114,14 @@ fun AppWithDualDrawer(navController: NavHostController) {
                     )
                 },
                 content = { paddingValues ->
-                    // Configuración del NavHost
                     NavHost(
                         navController = navController,
-                        startDestination = "main",
+                        startDestination = startDestination, // Destino inicial dinámico
                         modifier = Modifier.padding(paddingValues)
                     ) {
-                        // Pantalla principal
                         composable("main") {
                             PantallaDescubrimientoDestinosApp(navController)
                         }
-                        // Pantalla 2: Información detallada
                         composable("pantalla2") {
                             val destino = Destino(
                                 nombre = "Cimarron",
@@ -115,23 +130,20 @@ fun AppWithDualDrawer(navController: NavHostController) {
                                 comoLlegar = "Puedes llegar en autobús desde Ciudad de Guatemala hasta huehuetengango y luego tomar transporte hacia el cimarron.",
                                 queLlevar = "Lleva ropa cómoda, protector solar y suficiente agua.",
                                 queEsperar = "Naturaleza increíble, senderos y caminata de 2 horas.",
-                                latitud = 15.0311,   // Valor de latitud
-                                longitud = -91.6365  // Valor de longitud
+                                latitud = 15.0311,
+                                longitud = -91.6365
                             )
                             PantallaInformacionDetallada(navController, destino)
                         }
-                        composable(route = "pantalla3") { backStackEntry ->
+                        composable(route = "pantalla3") {
                             PantallaPersonalizaUbicacion()
                         }
-                        // Pantalla 4: Planificación de Viajes
                         composable("pantalla4") {
                             PantallaPlanificacionViajes()
                         }
-                        // Pantalla 5: Apoyo a la Comunidad Local
                         composable("pantalla5") {
                             PantallaApoyoComunidadLocal(navController)
                         }
-                        // Pantalla 6: Notificaciones y Alertas
                         composable("pantalla6") {
                             PantallaNotificacionesYAlertas(navController)
                         }
