@@ -25,6 +25,7 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import android.annotation.SuppressLint
 import android.location.Location
+import com.google.firebase.firestore.FirebaseFirestore
 
 class MainActivity3 : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,9 +70,11 @@ fun PantallaPersonalizaUbicacion() {
     var nombreUbicacion by remember { mutableStateOf(TextFieldValue("")) }
     var reseñaUbicacion by remember { mutableStateOf(TextFieldValue("")) }
     var linkImagen by remember { mutableStateOf(TextFieldValue("")) }
+    val context = LocalContext.current // Necesario para Firestore
 
     // Ubicación actual fija (puedes integrarla con FusedLocationProvider para obtener dinámicamente)
     val currentLocation = LatLng(14.634915, -90.506882)
+    val firestore = FirebaseFirestore.getInstance() // Instancia de Firestore
 
     Column(
         modifier = Modifier
@@ -112,7 +115,7 @@ fun PantallaPersonalizaUbicacion() {
         OutlinedTextField(
             value = reseñaUbicacion,
             onValueChange = { reseñaUbicacion = it },
-            label = { Text("Reseña de la ubicación") },
+            label = { Text("Descripción de la ubicación") },
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -128,7 +131,23 @@ fun PantallaPersonalizaUbicacion() {
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(onClick = {
-            println("Ubicación guardada: ${nombreUbicacion.text}, Reseña: ${reseñaUbicacion.text}, Imagen: ${linkImagen.text}")
+            // Llamada a Firestore para almacenar la información
+            val locationData = hashMapOf(
+                "nombreUbicacion" to nombreUbicacion.text,
+                "reseñaUbicacion" to reseñaUbicacion.text,
+                "linkImagen" to linkImagen.text,
+                "latitud" to currentLocation.latitude,
+                "longitud" to currentLocation.longitude
+            )
+
+            firestore.collection("ubicaciones")
+                .add(locationData)
+                .addOnSuccessListener {
+                    println("Ubicación guardada exitosamente en Firestore")
+                }
+                .addOnFailureListener { e ->
+                    println("Error al guardar la ubicación: $e")
+                }
         }) {
             Text("Guardar Ubicación")
         }

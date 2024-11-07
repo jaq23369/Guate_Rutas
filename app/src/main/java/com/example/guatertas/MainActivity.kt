@@ -192,7 +192,7 @@ fun PantallaDescubrimientoDestinosApp(
                     )
                 },
                 onDestinoClick = { destino ->
-                    navController.navigate("detalles/${destino.nombre}")
+                    navController.navigate("pantalla2")
                 },
                 modifier = modifier.padding(it)
             )
