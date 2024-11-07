@@ -1,6 +1,7 @@
 package com.example.guatertas
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -29,6 +30,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.guatertas.ui.theme.GuateRütasTheme
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
@@ -85,9 +87,18 @@ fun AppWithDualDrawer(navController: NavHostController, startDestination: String
         ModalNavigationDrawer(
             drawerContent = {
                 if (rightDrawerState.isOpen) {
-                    RightDrawerContent(closeDrawer = {
-                        coroutineScope.launch { rightDrawerState.close() }
-                    })
+                    RightDrawerContent(
+                        closeDrawer = {
+                            coroutineScope.launch { rightDrawerState.close() }
+                        },
+                        onLogout = {
+                            // Manejo del cierre de sesión
+                            val context = navController.context
+                            val signInIntent = Intent(context, SignInActivity::class.java)
+                            signInIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                            context.startActivity(signInIntent)
+                        }
+                    )
                 }
             },
             drawerState = rightDrawerState,
@@ -116,7 +127,7 @@ fun AppWithDualDrawer(navController: NavHostController, startDestination: String
                 content = { paddingValues ->
                     NavHost(
                         navController = navController,
-                        startDestination = startDestination, // Destino inicial dinámico
+                        startDestination = startDestination,
                         modifier = Modifier.padding(paddingValues)
                     ) {
                         composable("main") {
@@ -147,12 +158,24 @@ fun AppWithDualDrawer(navController: NavHostController, startDestination: String
                         composable("pantalla6") {
                             PantallaNotificacionesYAlertas(navController)
                         }
+
+                        // Composable para pantalla de SignIn
+                        composable("signIn") {
+                            SignInScreen(auth = FirebaseAuth.getInstance()) { isSignedIn ->
+                                if (isSignedIn) {
+                                    navController.navigate("main") {
+                                        popUpTo("main") { inclusive = true }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             )
         }
     }
 }
+
 
 
 @OptIn(ExperimentalMaterial3Api::class)
