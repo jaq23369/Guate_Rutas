@@ -85,31 +85,28 @@ fun LeftDrawerContent(navController: NavHostController, closeDrawer: () -> Unit)
         })
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text("Pantalla 2", fontSize = 18.sp, modifier = Modifier.clickable {
-            navController.navigate("pantalla2")
-            closeDrawer()
-        })
+
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text("Pantalla 3", fontSize = 18.sp, modifier = Modifier.clickable {
+        Text("Haz conocer tu destino", fontSize = 18.sp, modifier = Modifier.clickable {
             navController.navigate("pantalla3")
             closeDrawer()
         })
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text("Pantalla 4", fontSize = 18.sp, modifier = Modifier.clickable {
+        Text("Descubre destinos", fontSize = 18.sp, modifier = Modifier.clickable {
             navController.navigate("pantalla4")
             closeDrawer()
         })
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text("Pantalla 5", fontSize = 18.sp, modifier = Modifier.clickable {
+        Text("Apoyo a la comunidad", fontSize = 18.sp, modifier = Modifier.clickable {
             navController.navigate("pantalla5")
             closeDrawer()
         })
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text("Pantalla 6", fontSize = 18.sp, modifier = Modifier.clickable {
+        Text("Itinerario", fontSize = 18.sp, modifier = Modifier.clickable {
             navController.navigate("pantalla6")
             closeDrawer()
         })
