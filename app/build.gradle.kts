@@ -82,6 +82,7 @@ dependencies {
     implementation(libs.fireBaseStorage)
     implementation(libs.firebase.auth.ktx)
     implementation(libs.androidx.datastore.preferences.core.jvm)
+    implementation(libs.androidx.activity.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

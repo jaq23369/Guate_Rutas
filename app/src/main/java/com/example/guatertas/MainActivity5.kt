@@ -58,17 +58,18 @@ fun PantallaApoyoComunidadLocal(navController: NavHostController) {
                 ProyectoSostenible(
                     nombre = "Reforma de senderos el Cimarron",
                     descripcion = "Proyecto que mejorar los senderos para llegar al lugar.",
-                    detalles = "Este proyecto se centra en arreglar y mejorar los senderos del Cimarron."
+                    detalles = "\n" +
+                            "Este proyecto busca mejorar los caminos hacia El Cimarrón, un lugar de gran valor natural, haciéndolos más seguros y accesibles para los visitantes. Se integrarán señalizaciones sobre la flora y fauna para ofrecer una experiencia educativa y respetuosa con el entorno.\n"
                 ),
                 ProyectoSostenible(
                     nombre = "Turismo en laguna Ordoñez",
                     descripcion = "Un proyecto que involucra a la comunidad para promover el turismo.",
-                    detalles = "Los visitantes pueden aprender sobre la cultura local y contribuir a proyectos de desarrollo comunitario."
+                    detalles = "Este proyecto fomenta la participación de la comunidad local en el desarrollo turístico sostenible, invitando a los visitantes a sumergirse en la cultura y tradiciones de la región. A través de actividades guiadas y talleres, los turistas pueden aprender sobre la historia, el arte y la vida cotidiana de los habitantes, mientras contribuyen directamente a proyectos de desarrollo comunitario que benefician a la economía local."
                 ),
                 ProyectoSostenible(
                     nombre = "Conservación de Playa blanca",
                     descripcion = "Iniciativa para reducir la contaminación y proteger el ecosistema de la playa.",
-                    detalles = "El proyecto incluye campañas de concientización y actividades de limpieza en colaboración con los turistas y la comunidad."
+                    detalles = "sta iniciativa tiene como objetivo proteger el ecosistema único de Playa Blanca mediante la reducción de la contaminación y la preservación de su biodiversidad. El proyecto realiza campañas de concientización que educan a los visitantes sobre la importancia de mantener la playa limpia, además de organizar actividades de limpieza donde turistas y residentes colaboran en la recolección de desechos. "
                 )
             )
             proyectosCargados = nuevosProyectos
