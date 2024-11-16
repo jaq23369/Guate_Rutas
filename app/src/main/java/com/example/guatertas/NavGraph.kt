@@ -46,8 +46,31 @@ fun AppNavGraph(navController: NavHostController) {
         composable("pantalla6") {
             PantallaNotificacionesYAlertas(navController)
         }
+        composable("pantalla7") {
+            val destino = Destino(
+                nombre = "Laguna Ordoñez",
+                descripcion = "Un hermoso monumento natural en medio del desierto.",
+                imagenResId = R.drawable.lagordo,
+                comoLlegar = "Puedes llegar en autobús desde Ciudad de Guatemala hasta huehuetengango y luego tomar transporte hacia el cimarron.",
+                queLlevar = "Lleva ropa cómoda, protector solar y suficiente agua.",
+                queEsperar = "Naturaleza increíble, senderos y caminata de 2 horas.",
+                latitud = 15.0311,
+                longitud = -91.6365
+            )
+            PantallaInformacionDetallad(navController, destino)
+        }
+        composable("pantalla8") {
+            val destino = Destino(
+                nombre = "Playa Blanca",
+                descripcion = "Un hermoso monumento natural en medio del desierto.",
+                imagenResId = R.drawable.plbl,
+                comoLlegar = "Puedes llegar en autobús desde Ciudad de Guatemala hasta huehuetengango y luego tomar transporte hacia el cimarron.",
+                queLlevar = "Lleva ropa cómoda, protector solar y suficiente agua.",
+                queEsperar = "Naturaleza increíble, senderos y caminata de 2 horas.",
+                latitud = 15.0311,
+                longitud = -91.6365
+            )
+            PantallaInformacionDetalla(navController, destino)
+        }
     }
 }
-
-
-

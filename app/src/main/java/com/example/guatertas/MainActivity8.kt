@@ -29,28 +29,28 @@ import com.example.guatertas.ui.theme.GuateRütasTheme
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
 
-class MainActivity2 : ComponentActivity() {
+class MainActivity8 : ComponentActivity() {
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             GuateRütasTheme {
                 val navController = rememberNavController()
-                PantallaCachableInformacionDetallada(navController)
+                PantallaCachableInformacionDetalla(navController)
             }
         }
     }
 }
 
 @Composable
-fun PantallaCachableInformacionDetallada(navController: NavHostController) {
+fun PantallaCachableInformacionDetalla(navController: NavHostController) {
     val context = LocalContext.current
     val preferencesManager = PreferencesManager
     val coroutineScope = rememberCoroutineScope()
 
     // Estado de destino recuperado desde el caché
     var destino by remember { mutableStateOf<Destino?>(null) }
-    val cachedData by preferencesManager.getCachedScreenData(context, "pantalla2").collectAsState(initial = null)
+    val cachedData by preferencesManager.getCachedScreenData(context, "pantalla8").collectAsState(initial = null)
 
     LaunchedEffect(Unit) {
         cachedData?.let { data ->
@@ -60,9 +60,9 @@ fun PantallaCachableInformacionDetallada(navController: NavHostController) {
         // Simulación: Descargar datos si hay conexión (sustituir lógica por verificación de internet)
         if (destino == null) {
             val nuevoDestino = Destino(
-                nombre = "Cimarron",
+                nombre = "Play Blanca",
                 descripcion = "Un hermoso monumento natural en medio del desierto.",
-                imagenResId = R.drawable.cimarron,
+                imagenResId = R.drawable.plbl,
                 comoLlegar = "Puedes llegar en autobús desde Ciudad de Guatemala hasta Huehuetenango y luego tomar transporte hacia el Cimarron.",
                 queLlevar = "Lleva ropa cómoda, protector solar y suficiente agua.",
                 queEsperar = "Naturaleza increíble, senderos y caminata de 2 horas.",
@@ -74,14 +74,14 @@ fun PantallaCachableInformacionDetallada(navController: NavHostController) {
             // Guardar en caché
             val dataToCache = Gson().toJson(nuevoDestino)
             coroutineScope.launch {
-                preferencesManager.saveScreenData(context, "pantalla2", dataToCache)
+                preferencesManager.saveScreenData(context, "pantalla8", dataToCache)
             }
         }
     }
 
     // Mostrar pantalla
     if (destino != null) {
-        PantallaInformacionDetallada(navController, destino!!)
+        PantallaInformacionDetalla(navController, destino!!)
     } else {
         Text(
             text = "No hay datos disponibles. Por favor, conéctate a Internet.",
@@ -93,7 +93,7 @@ fun PantallaCachableInformacionDetallada(navController: NavHostController) {
 }
 
 @Composable
-fun PantallaInformacionDetallada(
+fun PantallaInformacionDetalla(
     navController: NavHostController,
     destino: Destino
 ) {
@@ -122,13 +122,13 @@ fun PantallaInformacionDetallada(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        InformacionSeccion(titulo = "Cómo llegar", descripcion = destino.comoLlegar)
+        InformacionSecci(titulo = "Cómo llegar", descripcion = destino.comoLlegar)
         Spacer(modifier = Modifier.height(16.dp))
 
-        InformacionSeccion(titulo = "Qué llevar", descripcion = destino.queLlevar)
+        InformacionSecci(titulo = "Qué llevar", descripcion = destino.queLlevar)
         Spacer(modifier = Modifier.height(16.dp))
 
-        InformacionSeccion(titulo = "Qué esperar", descripcion = destino.queEsperar)
+        InformacionSecci(titulo = "Qué esperar", descripcion = destino.queEsperar)
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
@@ -141,7 +141,7 @@ fun PantallaInformacionDetallada(
 }
 
 @Composable
-fun InformacionSeccion(titulo: String, descripcion: String) {
+fun InformacionSecci(titulo: String, descripcion: String) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(4.dp)
@@ -158,7 +158,7 @@ fun InformacionSeccion(titulo: String, descripcion: String) {
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewPantallaInformacionDetallada() {
+fun PreviewPantallaInformacionDetalla() {
     val destino = Destino(
         nombre = "Cimarron",
         descripcion = "Un hermoso monumento natural en medio del desierto.",

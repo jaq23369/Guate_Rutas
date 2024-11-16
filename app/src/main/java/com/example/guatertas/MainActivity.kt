@@ -169,6 +169,32 @@ fun AppWithDualDrawer(navController: NavHostController, startDestination: String
                                 }
                             }
                         }
+                        composable("pantalla7") {
+                            val destino = Destino(
+                                nombre = "Laguna Ordoñez",
+                                descripcion = "Un hermoso monumento natural en medio del desierto.",
+                                imagenResId = R.drawable.lagordo,
+                                comoLlegar = "Puedes llegar en autobús desde Ciudad de Guatemala hasta huehuetengango y luego tomar transporte hacia el cimarron.",
+                                queLlevar = "Lleva ropa cómoda, protector solar y suficiente agua.",
+                                queEsperar = "Naturaleza increíble, senderos y caminata de 2 horas.",
+                                latitud = 15.0311,
+                                longitud = -91.6365
+                            )
+                            PantallaInformacionDetallad(navController, destino)
+                        }
+                        composable("pantalla8") {
+                            val destino = Destino(
+                                nombre = "Playa Blanca",
+                                descripcion = "Un hermoso monumento natural en medio del desierto.",
+                                imagenResId = R.drawable.plbl,
+                                comoLlegar = "Puedes llegar en autobús desde Ciudad de Guatemala hasta huehuetengango y luego tomar transporte hacia el cimarron.",
+                                queLlevar = "Lleva ropa cómoda, protector solar y suficiente agua.",
+                                queEsperar = "Naturaleza increíble, senderos y caminata de 2 horas.",
+                                latitud = 15.0311,
+                                longitud = -91.6365
+                            )
+                            PantallaInformacionDetalla(navController, destino)
+                        }
                     }
                 }
             )
@@ -227,12 +253,18 @@ fun PantallaDescubrimientoDestinosApp(
                     )
                 },
                 onDestinoClick = { destino ->
-                    navController.navigate("pantalla2")
+                    // Navegar a una pantalla específica dependiendo del destino seleccionado
+                    when (destino.nombre) {
+                        "El cimarron" -> navController.navigate("pantalla2") // Si el destino es Cimmarron, va a pantalla2
+                        "Laguna Ordoñez" -> navController.navigate("pantalla7") // Si el destino es Laguna Brava, va a pantalla3
+                        else -> navController.navigate("pantalla8") // Si es cualquier otro destino, va a pantalla7
+                    }
                 },
                 modifier = modifier.padding(it)
             )
         }
     )
+
 }
 
 @Composable
@@ -295,5 +327,3 @@ fun CardDestino(destino: Destino, onClick: () -> Unit) {
         }
     }
 }
-
-
