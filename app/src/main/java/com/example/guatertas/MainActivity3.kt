@@ -16,19 +16,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
-import androidx.core.content.PermissionChecker
-import androidx.core.content.PermissionChecker.checkSelfPermission
+import androidx.core.content.ContextCompat
 import com.example.guatertas.ui.theme.GuateRütasTheme
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.*
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
-import android.annotation.SuppressLint
-import android.location.Location
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
+import kotlin.random.Random
 
 class MainActivity3 : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,10 +38,17 @@ class MainActivity3 : ComponentActivity() {
     }
 }
 
+// Nueva función para generar coordenadas aleatorias dentro de Guatemala
+fun generarUbicacionAleatoriaEnGuatemala(): LatLng {
+    val latitud = Random.nextDouble(13.7, 17.8) // Límites de latitud de Guatemala
+    val longitud = Random.nextDouble(-92.2, -88.2) // Límites de longitud de Guatemala
+    return LatLng(latitud, longitud)
+}
+
 @Composable
 fun PantallaPrincipal() {
     var locationPermissionGranted by remember { mutableStateOf(false) }
-    val context = LocalContext.current // Obtener el contexto actual
+    val context = LocalContext.current
 
     val requestPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
@@ -54,7 +57,11 @@ fun PantallaPrincipal() {
     }
 
     LaunchedEffect(Unit) {
-        if (context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
             locationPermissionGranted = true
         } else {
             requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -78,19 +85,19 @@ fun PantallaPersonalizaUbicacion() {
     val preferencesManager = PreferencesManager
     val coroutineScope = rememberCoroutineScope()
 
-    // Ubicación actual fija o dinámica según sea el caso
-    val currentLocation = LatLng(14.634915, -90.506882)
+    // Generar ubicación aleatoria inicialmente
+    var currentLocation by remember { mutableStateOf(generarUbicacionAleatoriaEnGuatemala()) }
 
     // Recuperar datos de caché
     val cachedData by preferencesManager.getCachedScreenData(context, "pantalla3").collectAsState(initial = null)
 
     LaunchedEffect(Unit) {
         cachedData?.let { data ->
-            // Si hay datos en caché, cargar en los campos
             val cachedLocation = Gson().fromJson(data, Ubicacion::class.java)
             nombreUbicacion = TextFieldValue(cachedLocation.nombreUbicacion)
             reseñaUbicacion = TextFieldValue(cachedLocation.reseñaUbicacion)
             linkImagen = TextFieldValue(cachedLocation.linkImagen)
+            currentLocation = LatLng(cachedLocation.latitud, cachedLocation.longitud)
         }
     }
 
@@ -115,7 +122,7 @@ fun PantallaPersonalizaUbicacion() {
         ) {
             Marker(
                 state = MarkerState(position = currentLocation),
-                title = "Tu ubicación actual"
+                title = "Ubicación aleatoria"
             )
         }
 
@@ -172,6 +179,9 @@ fun PantallaPersonalizaUbicacion() {
             coroutineScope.launch {
                 preferencesManager.saveScreenData(context, "pantalla3", dataToCache)
             }
+
+            // Generar nueva ubicación aleatoria
+            currentLocation = generarUbicacionAleatoriaEnGuatemala()
         }) {
             Text("Guardar Ubicación")
         }
@@ -186,6 +196,3 @@ data class Ubicacion(
     val latitud: Double,
     val longitud: Double
 )
-
-
-
