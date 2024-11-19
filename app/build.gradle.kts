@@ -64,6 +64,7 @@ dependencies {
     implementation("androidx.compose.material:material-icons-core:1.3.1")
     implementation("androidx.compose.material:material-icons-extended:1.3.1")
     implementation("androidx.compose.material3:material3:1.0.0")
+    implementation("com.google.firebase:firebase-appcheck-playintegrity:17.1.2")
     implementation("androidx.navigation:navigation-compose:2.7.3")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

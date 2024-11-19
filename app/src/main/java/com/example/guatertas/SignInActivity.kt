@@ -1,11 +1,11 @@
 package com.example.guatertas
 
 import android.content.Intent
-import androidx.compose.foundation.Image
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -18,6 +18,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.FirebaseApp
+import com.google.firebase.appcheck.FirebaseAppCheck
+import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
 import kotlinx.coroutines.delay
 
 class SignInActivity : ComponentActivity() {
@@ -26,6 +29,16 @@ class SignInActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // Inicializa Firebase
+        FirebaseApp.initializeApp(this)
+
+        // Configura App Check con Play Integrity
+        val firebaseAppCheck = FirebaseAppCheck.getInstance()
+        firebaseAppCheck.installAppCheckProviderFactory(
+            PlayIntegrityAppCheckProviderFactory.getInstance()
+        )
+
+        // Inicializa Firebase Auth
         auth = FirebaseAuth.getInstance()
 
         setContent {
@@ -67,8 +80,6 @@ fun SplashScreen(onTimeout: () -> Unit) {
         )
     }
 }
-
-
 
 @Composable
 fun SignInScreen(auth: FirebaseAuth, onSignInSuccess: (Boolean) -> Unit) {
