@@ -64,6 +64,83 @@ fun PantallaPlanificacionViajes() {
             imagenResId = R.drawable.lagordo,
             latitud = 14.7528,
             longitud = -91.2678
+        ),
+        Destino(
+            nombre = "Cancuén",
+            descripcion = "Un importante sitio arqueológico maya en el departamento de Petén.",
+            imagenResId = R.drawable.cancuen,
+            latitud = 15.6290,
+            longitud = -90.2940
+        ),
+        Destino(
+            nombre = "Waka Perú",
+            descripcion = "Otro sitio arqueológico en Petén con un rico pasado maya.",
+            imagenResId = R.drawable.waka_peru,
+            latitud = 16.2293,
+            longitud = -90.3171
+        ),
+        Destino(
+            nombre = "Laguna Internacional",
+            descripcion = "Una hermosa laguna que conecta con Belice.",
+            imagenResId = R.drawable.laguna_internacional,
+            latitud = 16.4411,
+            longitud = -89.2363
+        ),
+        Destino(
+            nombre = "",
+            descripcion = "Una serie de cuevas fascinantes cerca de Chisec, Alta Verapaz.",
+            imagenResId = R.drawable.bombil_pek,
+            latitud = 15.8202,
+            longitud = -90.3364
+        ),
+        Destino(
+            nombre = "Cuevas de Candelaria",
+            descripcion = "Un sistema de cuevas impresionante y sagrado para los mayas.",
+            imagenResId = R.drawable.cuevas_candelaria,
+            latitud = 15.7514,
+            longitud = -90.3890
+        ),
+        Destino(
+            nombre = "Grutas del Rey Marcos",
+            descripcion = "Cuevas en Alta Verapaz con un ecosistema fascinante.",
+            imagenResId = R.drawable.rey_marcos,
+            latitud = 15.5561,
+            longitud = -90.2744
+        ),
+        Destino(
+            nombre = "Finca La Chingada",
+            descripcion = "Una finca ecológica en el corazón de la naturaleza.",
+            imagenResId = R.drawable.la_chingada,
+            latitud = 15.8700,
+            longitud = -90.1600
+        ),
+        Destino(
+            nombre = "Salto de Chilascó",
+            descripcion = "Una impresionante cascada en Baja Verapaz.",
+            imagenResId = R.drawable.salto_chilasco,
+            latitud = 15.1912,
+            longitud = -90.2925
+        ),
+        Destino(
+            nombre = "Biotopo de la Ardilla",
+            descripcion = "Un lugar protegido para la fauna y flora local.",
+            imagenResId = R.drawable.biotopo_ardilla,
+            latitud = 15.0338,
+            longitud = -90.3626
+        ),
+        Destino(
+            nombre = "Museo de Paleontología y Arqueología de Estanzuela",
+            descripcion = "Museo destacado por sus hallazgos arqueológicos y paleontológicos.",
+            imagenResId = R.drawable.museo_estanzuela,
+            latitud = 14.8041,
+            longitud = -89.6668
+        ),
+        Destino(
+            nombre = "Punta de Cocolí",
+            descripcion = "Un punto destacado para disfrutar de vistas únicas.",
+            imagenResId = R.drawable.punta_cocoli,
+            latitud = 15.7231,
+            longitud = -88.5862
         )
     )
 
