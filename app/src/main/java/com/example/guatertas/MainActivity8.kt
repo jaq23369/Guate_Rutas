@@ -60,12 +60,12 @@ fun PantallaCachableInformacionDetalla(navController: NavHostController) {
         // Simulación: Descargar datos si hay conexión (sustituir lógica por verificación de internet)
         if (destino == null) {
             val nuevoDestino = Destino(
-                nombre = "Play Blanca",
+                nombre = "Playa Blanca",
                 descripcion = "Un hermoso monumento natural en medio del desierto.",
                 imagenResId = R.drawable.plbl,
-                comoLlegar = "Puedes llegar en autobús desde Ciudad de Guatemala hasta Huehuetenango y luego tomar transporte hacia el Cimarron.",
-                queLlevar = "Lleva ropa cómoda, protector solar y suficiente agua.",
-                queEsperar = "Naturaleza increíble, senderos y caminata de 2 horas.",
+                comoLlegar = "Para llegar por tierra hay que tomar la Carretera al Atlántico pasando por El Rancho, Río Hondo, y el cruce de Zacapa e Izabal. Muy cerca de esta playa, se encuentra uno de los lugares turísticos más reconocidos del lugar Siete Altares.",
+                queLlevar = "Lleva ropa cómoda, protector solar.",
+                queEsperar = "Vistas hermosa, frescura del mar  y un buen tiempo.",
                 latitud = 15.0311,
                 longitud = -91.6365
             )
@@ -160,12 +160,12 @@ fun InformacionSecci(titulo: String, descripcion: String) {
 @Composable
 fun PreviewPantallaInformacionDetalla() {
     val destino = Destino(
-        nombre = "Cimarron",
+        nombre = "Play Blanca",
         descripcion = "Un hermoso monumento natural en medio del desierto.",
-        imagenResId = R.drawable.cimarron,
-        comoLlegar = "Puedes llegar en autobús desde Ciudad de Guatemala hasta Huehuetenango y luego tomar transporte hacia el Cimarron.",
-        queLlevar = "Lleva ropa cómoda, protector solar y suficiente agua.",
-        queEsperar = "Naturaleza increíble, senderos y caminata de 2 horas.",
+        imagenResId = R.drawable.plbl,
+        comoLlegar = "Para llegar por tierra hay que tomar la Carretera al Atlántico pasando por El Rancho, Río Hondo, y el cruce de Zacapa e Izabal. Muy cerca de esta playa, se encuentra uno de los lugares turísticos más reconocidos del lugar Siete Altares.",
+        queLlevar = "Lleva ropa cómoda, protector solar.",
+        queEsperar = "Vistas hermosa, frescura del mar  y un buen tiempo.",
         latitud = 15.0311,
         longitud = -91.6365
     )

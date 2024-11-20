@@ -61,11 +61,11 @@ fun PantallaCachableInformacionDetallad(navController: NavHostController) {
         if (destino == null) {
             val nuevoDestino = Destino(
                 nombre = "laguna Ordoñez",
-                descripcion = "Un hermoso monumento natural en medio del desierto.",
+                descripcion = "Un espectacular cuerpo de agua rodeado de dunas y vegetación en el corazón del desierto.",
                 imagenResId = R.drawable.lagordo,
-                comoLlegar = "Puedes llegar en autobús desde Ciudad de Guatemala hasta Huehuetenango y luego tomar transporte hacia el Cimarron.",
-                queLlevar = "Lleva ropa cómoda, protector solar y suficiente agua.",
-                queEsperar = "Naturaleza increíble, senderos y caminata de 2 horas.",
+                comoLlegar = "Se conduce por la Carretera Interamericana CA-1 y al llegar a la bifurcación de cuatro caminos se debe dirigir hacia Huehuetenango. Al cruzar Huehuetenango se debe de pasar por el municipio de Chiantla iniciando la cuesta por un trayecto de 12 kilómetros hasta el mirador Juan Diéguez Olaverri ubicado en los Cuchumatanes.",
+                queLlevar = "Zapatos comodos, protector solar y suficiente agua.",
+                queEsperar = "Naturaleza increíble, senderos y caminata de 3 horas.",
                 latitud = 15.0311,
                 longitud = -91.6365
             )
@@ -161,11 +161,11 @@ fun InformacionSeccio(titulo: String, descripcion: String) {
 fun PreviewPantallaInformacionDetallad() {
     val destino = Destino(
         nombre = "laguna Ordoñez",
-        descripcion = "Un hermoso monumento natural en medio del desierto.",
+        descripcion = "Un espectacular cuerpo de agua rodeado de dunas y vegetación en el corazón del desierto.",
         imagenResId = R.drawable.lagordo,
-        comoLlegar = "Puedes llegar en autobús desde Ciudad de Guatemala hasta Huehuetenango y luego tomar transporte hacia el Cimarron.",
-        queLlevar = "Lleva ropa cómoda, protector solar y suficiente agua.",
-        queEsperar = "Naturaleza increíble, senderos y caminata de 2 horas.",
+        comoLlegar = "Se conduce por la Carretera Interamericana CA-1 y al llegar a la bifurcación de cuatro caminos se debe dirigir hacia Huehuetenango. Al cruzar Huehuetenango se debe de pasar por el municipio de Chiantla iniciando la cuesta por un trayecto de 12 kilómetros hasta el mirador Juan Diéguez Olaverri ubicado en los Cuchumatanes.",
+        queLlevar = "Zapatos comodos, protector solar y suficiente agua.",
+        queEsperar = "Naturaleza increíble, senderos y caminata de 3 horas.",
         latitud = 15.0311,
         longitud = -91.6365
     )
